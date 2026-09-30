@@ -1,5 +1,9 @@
 # lgtm
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Made with Go](https://img.shields.io/badge/Made%20with-Go-00ADD8.svg?logo=go&logoColor=white)](https://go.dev/)
+[![GitHub stars](https://img.shields.io/github/stars/butaraul/lgtm.svg?style=social)](https://github.com/butaraul/lgtm/stargazers)
+
 A terminal game about supervising an AI coding agent.
 
 You take a contract from a client with a vague brief. A simulated agent
@@ -248,3 +252,7 @@ rubber stamp earns more than a C. Run it after changing budgets or costs.
   the accent and a faint background.
 - **The terminal UI uses Bubble Tea v1**, the stable line with the widest
   terminal support at the time of writing.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
