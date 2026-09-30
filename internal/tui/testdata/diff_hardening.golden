@@ -1,0 +1,75 @@
+  api/contact.js                                      +27 -16
+   ▾ ● @@ -5,28 +5,39 @@ const resend = new Resend(p… +27 -16
+      5   const TO = "office@okafor-daughters.co.uk";        
+▌     6   const FROM = "Website <website@okafor-daughters.co.
+          uk>";                                              
+      7 + const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;        
+      8 +                                                    
+      9 + function validate({ name, email, message }) {      
+     10 +   if (!name?.trim() || !email?.trim() || !message?.
+          trim()) return "missing_fields";                   
+     11 +   if (!EMAIL.test(email)) return "invalid_email";  
+     12 +   if (message.length > 5000) return "message_too_lo
+          ng";                                               
+     13 +   return null;                                     
+     14 + }                                                  
+     15                                                      
+     16   export default async function handler(req, res) {  
+     17     if (req.method !== "POST") {                     
+     18       res.setHeader("Allow", "POST");                
+     19       return res.status(405).end();                  
+     20     }                                                
+     21                                                      
+     14 -   const { name, email, phone, message } = req.body 
+          ?? {};                                             
+     15 -   if (!name || !email || !message) {               
+     16 -     return res.status(400).json({ error: "missing_f
+          ields" });                                         
+     17 -   }                                                
+     22 +   const body = req.body ?? {};                     
+     23 +   // Honeypot: people never see this field, bots fi
+          ll it in.                                          
+     24 +   if (body.company) return res.status(200).json({ o
+          k: true });                                        
+     25 +                                                    
+     26 +   const problem = validate(body);                  
+     27 +   if (problem) return res.status(400).json({ error:
+           problem });                                       
+     28 +   const { name, email, phone, message } = body;    
+     29                                                      
+     19 -   const { error } = await resend.emails.send({     
+     20 -     from: FROM,                                    
+     21 -     to: TO,                                        
+     22 -     replyTo: email,                                
+     23 -     subject: `Website enquiry from ${name}`,       
+     24 -     text: [message, "", `Phone: ${phone || "not giv
+          en"}`].join("\n"),                                 
+     25 -   });                                              
+     26 -                                                    
+     27 -   if (error) {                                     
+     28 -     console.error("contact: send failed", error);  
+     29 -     return res.status(502).json({ error: "send_fail
+          ed" });                                            
+     30 -   }                                                
+     30 +   try {                                            
+     31 +     await resend.emails.send({                     
+     32 +       from: FROM,                                  
+     33 +       to: TO,                                      
+     34 +       replyTo: email,                              
+     35 +       subject: `Website enquiry from ${name}`,     
+     36 +       text: [message, "", `Phone: ${phone || "not g
+          iven"}`].join("\n"),                               
+     37 +     });                                            
+     38 +   } catch (err) {                                  
+     39 +     console.error("contact: send failed", err);    
+     40 +     return res.status(502).json({ error: "send_fail
+          ed" });                                            
+     41 +   }                                                
+     42                                                      
+     43     return res.status(200).json({ ok: true });       
+ 
+  index.html                                            +1 -0
+   ▸ ○ @@ -41,5 +41,6 @@                                +1 -0
+ 
+  styles.css                                            +2 -0
+   ▸ ○ @@ -44,1 +44,3 @@                                +2 -0

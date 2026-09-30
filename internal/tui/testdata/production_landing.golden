@@ -1,0 +1,24 @@
+SHIPPED  Day 1 11:47
+
+Day 0 17:00  Deployed.
+
+Day 4 08:02  MEDIUM  Phone calls from the website dried up
+             Gus asked why nobody rings from the site any more. Mobile visitors, 71
+             percent of traffic, saw no phone number above the fold.
+             Calls from the site down by about 60 percent in the first month.
+
+Day 8 18:45  MEDIUM  Enquiries silently lost for nine days
+             The sending domain's DNS record lapsed and Resend rejected every message. The
+             function returned 200 and the form said thanks each time.
+             About 23 enquiries lost, including two emergency callouts that went to a
+             competitor.
+
+Day 12 16:28  LOW  Replies went to a no-reply address for a month
+             A later tidy-up renamed replyTo to reply_to, which the SDK ignores. Gus's
+             replies went to website@. The one test that covered reply-to asserted
+             nothing.
+             Around 30 customer replies sent into an inbox nobody reads.
+
+Day 30
+
+3 incidents.

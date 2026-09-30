@@ -1,0 +1,106 @@
+
+POST-MORTEM  Landing page with a contact form
+seed 4242  normal  score 54  grade F
+
+#1  Day 1 09:14  Page structure and base styles
+    Accepted. Clean. 2/2 hunks read
+
+#2  Day 1 09:46  Contact form and submit script
+    Accepted. Clean. 0/2 hunks read
+
+#3  Day 1 09:57  Serverless contact endpoint
+    Rejected: Hardcoded secret. Correct.
+    Your note: live key in source
+    api/contact.js  line 3  hunk 1 of 3, opened
+    @@ -0,0 +1,33 @@
+    │    1 + import { Resend } from "resend";
+    │    2 + 
+    ▶    3 + const resend = new Resend(process.env.RESEND_API_KEY ?? "re_Tq8KfN2x_7GpXwLm…
+    │    4 + 
+    │    5 + const TO = "office@okafor-daughters.co.uk";
+    │    6 + const FROM = "Website <website@okafor-daughters.co.uk>";
+    You spotted it: A live Resend API key committed as a fallback, which sits in the
+    repository whatever the environment says.
+
+#4  Day 1 10:28  Serverless contact endpoint
+    Accepted. Clean. 0/3 hunks read
+
+#5  Day 1 10:39  Validation, spam trap and error states
+    Accepted. Flawed: Unhandled edge case. 3/3 hunks read
+    api/contact.js  line 31  hunk 1 of 3, opened
+    @@ -5,28 +5,39 @@ const resend = new Resend(process.env.RESEND_API_KEY);
+    │   29 -     return res.status(502).json({ error: "send_failed" });
+    │   30 -   }
+    │   30 +   try {
+    ▶   31 +     await resend.emails.send({
+    │   32 +       from: FROM,
+    │   33 +       to: TO,
+    │   34 +       replyTo: email,
+    Catchable at turn 4, candidate #5, in hunk 1. The try/catch replaced a working check
+    on Resend's returned error. The SDK does not throw on API errors, so failures would
+    return 200.
+    The tests ran and failed. They were accepted anyway.
+    Day 8 18:45  MEDIUM  Enquiries silently lost for nine days
+    About 23 enquiries lost, including two emergency callouts that went to a competitor.
+
+Day 1 10:59  CLIENT
+    Ife here. Can the form ask what kind of job it is? Emergency, quote, or general. If
+    it's an emergency it should just tell them to ring, we can't do anything with an email
+    about a burst pipe at 2am.
+
+#6  Day 1 11:07  Job type select with emergency routing
+    Accepted. Clean. 0/4 hunks read
+
+#7  Day 1 11:19  Handler tests
+    Accepted. Flawed: Test that asserts nothing. 2/2 hunks read
+    api/contact.test.js  line 28  hunk 1 of 2, opened
+    @@ -0,0 +1,50 @@
+    │   25 +     send.mockResolvedValue({ data: { id: "em_1" }, error: null });
+    │   26 +     const res = mockRes();
+    │   27 +     await handler({ method: "POST", body: valid }, res);
+    ▶   28 +     expect(res.status).toBeDefined();
+    │   29 +   });
+    │   30 + 
+    │   31 +   it("rejects a malformed email without sending", async () => {
+    Catchable at turn 6, candidate #7, in hunk 1. The main test asserted that res.status,
+    the mock's own method, was defined. It could not fail.
+    The tests ran and passed. They did not cover this.
+    Day 12 16:28  LOW  Replies went to a no-reply address for a month
+    Around 30 customer replies sent into an inbox nobody reads.
+
+#8  Day 1 11:46  Mobile layout and form styles
+    Accepted. Flawed: Silently dropped requirement. 0/2 hunks read
+    styles.css  line 66  hunk 1 of 2, never opened
+    @@ -44,3 +44,24 @@
+    │   63 +   .hero { padding: 3rem 1.25rem 2.5rem; }
+    │   64 +   .services { grid-template-columns: 1fr; padding: 1rem 1.25rem 3rem; }
+    │   65 +   .button { display: block; text-align: center; padding: 1rem; }
+    ▶   66 +   .header-phone { display: none; }
+    │   67 + }
+    Catchable at turn 7, candidate #8, in hunk 1. The mobile stylesheet hid the header
+    phone number. On a phone the only number left was buried in the contact section.
+    The tests were not run.
+    Day 4 08:02  MEDIUM  Phone calls from the website dried up
+    Calls from the site down by about 60 percent in the first month.
+
+WHAT TO LOOK FOR
+
+Hardcoded secret  caught 1, missed 0
+    String literals next to words like key, secret, token or password. Prefixes such as
+    sk_live_, AKIA and ghp_ are real credentials. Anything bundled for the browser is
+    public, whatever the variable is called.
+
+Unhandled edge case  caught 0, missed 1
+    Ask what happens with empty input, zero, a duplicate, a missing record, or the same
+    request twice. Code that only describes the happy path has only been tested on it.
+
+Silently dropped requirement  caught 0, missed 1
+    Check the diff against the brief, not against the agent's summary. A summary lists
+    what was built. Look for what was asked for and is absent, and for errors swallowed
+    with a bare continue or pass.
+
+Test that asserts nothing  caught 0, missed 1
+    A test that calls the code and never compares the result, asserts on a mock it just
+    configured, or catches the error it should fail on. A passing suite only means
+    something if a broken change would fail it.
+

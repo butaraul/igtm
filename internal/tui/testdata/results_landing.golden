@@ -1,0 +1,20 @@
+
+GRADE  F  54
+
+Shipped. Most of what review should have caught, production caught instead.
+
+TRUST CALIBRATION  63
+                 clean  flawed
+    accepted       4       3
+    rejected       0       1
+
+Shipped               yes
+Client satisfaction   58
+Production            40  incidents: 3, worst medium
+Requirements          4 of 5 delivered
+Review coverage       48% of hunks read
+Diagnosis             1 of 1 catches named correctly
+Budget left           57%
+
+Score: 40% calibration, 35% production, 25% client satisfaction. Calibration is the mean
+of the share of flaws rejected and the share of clean work accepted. Speed is not scored.
