@@ -1,8 +1,8 @@
-# igtm
+# lgtm
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Made with Go](https://img.shields.io/badge/Made%20with-Go-00ADD8.svg?logo=go&logoColor=white)](https://go.dev/)
-[![GitHub stars](https://img.shields.io/github/stars/butaraul/igtm.svg?style=social)](https://github.com/butaraul/igtm/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/butaraul/lgtm.svg?style=social)](https://github.com/butaraul/lgtm/stargazers)
 
 A terminal game about supervising an AI coding agent.
 
